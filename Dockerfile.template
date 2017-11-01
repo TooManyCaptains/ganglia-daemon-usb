@@ -1,4 +1,4 @@
-FROM resin/raspberrypi3-node:8.8.1-onbuild
+FROM resin/raspberrypi3-node:8-onbuild
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
