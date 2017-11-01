@@ -17,6 +17,24 @@ const serverMethod = (path: string) => request.get(`${SERVER_URL}/${path}`).catc
 
 const deviceIsPartOfGame = d => _.flatten(bays).includes(d.locationId) && wires.includes(d.serialNumber)
 
+
+
+// const deviceIsPartOfGame = d => wires.includes(d.serialNumber)
+
+let lastNoise = Date.now()
+
+const shouldSkip = () => {
+	const now = Date.now()
+	// console.log(now - lastNoise)
+	const ss = now - lastNoise < 400
+	lastNoise = Date.now()
+	if (ss) {
+		return true
+	} else {
+		return false
+	}
+}
+
 // device -> {bay: x, port: y}
 const deviceToBayAndPort = d => {
 	console.assert(deviceIsPartOfGame(d))
@@ -25,8 +43,9 @@ const deviceToBayAndPort = d => {
 	return {bay, port}
 }
 
-function onDeviceAdded(device) {
-	console.log(device)
+function onDeviceAdded(device, debounce=true) {
+	if (debounce && shouldSkip()) return
+	console.log('+ ' + device.serialNumber)
 	if (!deviceIsPartOfGame(device)) return
 	const {bay, port} = deviceToBayAndPort(device)
 	const wire = wires.indexOf(device.serialNumber)
@@ -35,6 +54,8 @@ function onDeviceAdded(device) {
 }
 
 function onDeviceRemoved(device) {
+	if (shouldSkip()) return
+	console.log('- ' + device.serialNumber)
 	if (!deviceIsPartOfGame(device)) return
 	const {bay, port} = deviceToBayAndPort(device)
 	console.log(`wire disconnected from bay ${bay} port ${port}`)
@@ -44,7 +65,7 @@ function onDeviceRemoved(device) {
 function addAlreadyPluggedInDevices() {
   usbDetect.find(WIRE_DEVICE_VENDOR_ID, WIRE_DEVICE_PRODUCT_ID, (err, devices) => {
 		if (err) console.error(err)
-    devices.forEach(onDeviceAdded)
+    devices.forEach(device => onDeviceAdded(device, false))
   })
 }
 
