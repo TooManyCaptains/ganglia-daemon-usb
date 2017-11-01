@@ -26,6 +26,7 @@ const deviceToBayAndPort = d => {
 }
 
 function onDeviceAdded(device) {
+	console.log(device)
 	if (!deviceIsPartOfGame(device)) return
 	const {bay, port} = deviceToBayAndPort(device)
 	const wire = wires.indexOf(device.serialNumber)
