@@ -3,7 +3,7 @@ import usbDetect from 'usb-detection'
 import _ from 'lodash'
 import request from 'request-promise-native'
 
-const SERVER_URL = 'http://localhost:3000'
+const SERVER_URL = process.env.STARSHIP_SERVER_URL || 'https://starship-server.herokuapp.com'
 const WIRE_DEVICE_VENDOR_ID = 1423
 const WIRE_DEVICE_PRODUCT_ID = 25479
 
@@ -48,6 +48,7 @@ function addAlreadyPluggedInDevices() {
 }
 
 function main() {
+	console.log(`Server: ${SERVER_URL}`)
 	console.log('Daemon running 😈')
 	addAlreadyPluggedInDevices()
 	usbDetect.on('add', onDeviceAdded)
