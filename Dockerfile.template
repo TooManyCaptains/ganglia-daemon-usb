@@ -7,8 +7,8 @@ RUN apt-get update && apt-get install -yq \
     libudev-dev && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ONBUILD COPY package.json /usr/src/app/
-ONBUILD RUN DEBIAN_FRONTEND=noninteractive JOBS=MAX npm install --unsafe-perm
-ONBUILD COPY . /usr/src/app
+COPY package.json /usr/src/app/
+RUN DEBIAN_FRONTEND=noninteractive JOBS=MAX npm install --unsafe-perm
+COPY . /usr/src/app
 
 CMD [ "npm", "start" ]
